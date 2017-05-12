@@ -9,6 +9,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Pools;
 
 import io.anuke.ucore.core.Draw;
 import io.anuke.ucore.core.Graphics;
@@ -151,7 +152,9 @@ public class Control extends RendererModule{
 		nx = newX;
 		ny = newY;
 		
-		Draw.color(start, end, (float)stack.size()/(maxstack-2));
+		float scl = (float)stack.size()/(maxstack-2);
+		
+		Draw.color(start, end, scl);
 		Draw.line(x, y, x+nx, y+ny);
 		
 		x += nx;
@@ -159,7 +162,7 @@ public class Control extends RendererModule{
 	}
 	
 	private void push(){
-		stack.push(new Vector3(x, y, angle));
+		stack.push(Pools.obtain(Vector3.class).set(x, y, angle));
 		maxstack = Math.max(stack.size(), maxstack);
 	}
 	
@@ -169,6 +172,7 @@ public class Control extends RendererModule{
 		x = vec.x;
 		y = vec.y;
 		angle = vec.z;
+		Pools.free(vec);
 	}
 	
 	private void input(){
@@ -176,7 +180,7 @@ public class Control extends RendererModule{
 			Gdx.app.exit();
 		
 		if(Inputs.scrolled()){
-			camera.zoom = Mathf.clamp(camera.zoom-Inputs.scroll()/10f*delta(), 0.1f, 10f);
+			camera.zoom = Mathf.clamp(camera.zoom-Inputs.scroll()/5f*delta(), 0.1f, 10f);
 			camera.update();
 		}
 		

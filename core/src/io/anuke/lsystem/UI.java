@@ -5,9 +5,11 @@ import static io.anuke.lsystem.Vars.control;
 import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 
 import io.anuke.ucore.core.Draw;
+import io.anuke.ucore.core.Inputs;
 import io.anuke.ucore.modules.SceneModule;
 import io.anuke.ucore.scene.builders.*;
 import io.anuke.ucore.scene.ui.*;
@@ -20,6 +22,7 @@ public class UI extends SceneModule{
 	Table ruletable;
 	Dialog colordialog;
 	ColorPicker picker;
+	boolean visible = true;
 	
 	@Override
 	public void init(){
@@ -56,6 +59,10 @@ public class UI extends SceneModule{
 			new label(()->{
 				return control.getCharacters() + " chars";
 			}).left();
+			
+			row();
+			
+			new label("Press F to toggle UI");
 			
 		}}.end();
 		
@@ -243,6 +250,17 @@ public class UI extends SceneModule{
 			ruletable.row();
 		}
 		ruletable.pack();
+	}
+	
+	@Override
+	public void update(){
+		if(Inputs.keyUp(Keys.F))
+			visible = !visible;
+		
+		if(visible){
+			scene.act();
+			scene.draw();
+		}
 	}
 	
 }
