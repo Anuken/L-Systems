@@ -1,2 +1,2 @@
 # L-Systems
-An L-system editor
+An L-system editor.
