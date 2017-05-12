@@ -158,7 +158,7 @@ public class Control extends RendererModule{
 			Gdx.app.exit();
 		
 		if(Inputs.scrolled()){
-			camera.zoom = Mathf.clamp(camera.zoom-Inputs.scroll()/10f, 0.1f, 10f);
+			camera.zoom = Mathf.clamp(camera.zoom-Inputs.scroll()/10f*delta(), 0.1f, 10f);
 			camera.update();
 		}
 		

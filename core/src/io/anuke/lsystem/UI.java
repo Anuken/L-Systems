@@ -88,6 +88,20 @@ public class UI extends SceneModule{
 				get().pad(20);
 				get().background("button");
 				
+				new label("Start Color: ");
+				get().addButton("Select", ()->{
+					
+				});
+				
+				row();
+				
+				new label("End Color: ").padBottom(10);
+				get().addButton("Select", ()->{
+					
+				}).padBottom(10);
+				
+				row();
+				
 				new label("Iterations: ");
 				get().addField("6", s->{
 					int out = Strings.parseInt(s);
