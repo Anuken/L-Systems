@@ -21,8 +21,8 @@ import io.anuke.ucore.util.Timers;
 public class Control extends RendererModule{
 	//private GifRecorder recorder = new GifRecorder(batch);
 	
-	final private Color start = Color.PURPLE;//Color.valueOf("37682c");
-	final private Color end = Color.CORAL;//Color.valueOf("94ac62");
+	final private Color start = Color.valueOf("37682c");
+	final private Color end = Color.valueOf("94ac62");
 	final private Stack<Vector3> stack = new Stack<>();
 	private float len = 4f;
 	private float space = 25;
@@ -55,6 +55,14 @@ public class Control extends RendererModule{
 		generate();
 		
 		clear();
+	}
+	
+	public Color startColor(){
+		return start;
+	}
+	
+	public Color endColor(){
+		return end;
 	}
 	
 	public void setSwaySpace(float sspace){
@@ -133,7 +141,7 @@ public class Control extends RendererModule{
 		
 		vector.set(len, 0).rotate(-angle+180 + sway);
 		
-		Draw.color(start, end, (float)stack.size()/maxstack);
+		Draw.color(start, end, (float)stack.size()/(maxstack-3));
 		Draw.line(x, y, x+vector.x, y+vector.y);
 		
 		x += vector.x;

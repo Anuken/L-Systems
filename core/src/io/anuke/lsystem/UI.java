@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.Color;
 import io.anuke.ucore.core.Draw;
 import io.anuke.ucore.modules.SceneModule;
 import io.anuke.ucore.scene.builders.*;
-import io.anuke.ucore.scene.ui.TextField;
+import io.anuke.ucore.scene.ui.*;
 import io.anuke.ucore.scene.ui.TextField.TextFieldStyle;
 import io.anuke.ucore.scene.ui.layout.Table;
 import io.anuke.ucore.util.Strings;
@@ -18,10 +18,30 @@ import io.anuke.ucore.util.Timers;
 
 public class UI extends SceneModule{
 	Table ruletable;
+	Dialog colordialog;
+	ColorPicker picker;
 	
 	@Override
 	public void init(){
-
+		Dialog.closePadR -= 1;
+		styles.font().setUseIntegerPositions(true);
+		
+		picker = new ColorPicker();
+		picker.colorChanged(c->{
+			
+		});
+		
+		colordialog = new Dialog("Select Color");
+		colordialog.content().add(picker).pad(10);
+		colordialog.addCloseButton();
+		colordialog.setCentered(false);
+		colordialog.setMovable(true);
+		
+		colordialog.getButtonTable().addButton("OK", ()->{
+			colordialog.hide();
+		}).size(90, 40).padBottom(2);
+		
+		
 		build.begin();
 		
 		new table(){{
@@ -88,18 +108,28 @@ public class UI extends SceneModule{
 				get().pad(20);
 				get().background("button");
 				
-				new label("Start Color: ");
-				get().addButton("Select", ()->{
-					
+				TextButton start = new TextButton("Select");
+				start.add(new ColorImage(control.startColor())).size(26);
+				start.clicked(()->{
+					picker.setColor(control.startColor());
+					colordialog.show();
 				});
+				
+				new label("Start Color: ");
+				add(start).grow();
 				
 				row();
 				
-				new label("End Color: ").padBottom(10);
-				get().addButton("Select", ()->{
-					
-				}).padBottom(10);
+				TextButton end = new TextButton("Select");
+				end.add(new ColorImage(control.endColor())).size(26);
+				end.clicked(()->{
+					picker.setColor(control.endColor());
+					colordialog.show();
+				});
 				
+				new label("End Color: ").padBottom(10);
+				add(end).grow().padBottom(10);
+					
 				row();
 				
 				new label("Iterations: ");
