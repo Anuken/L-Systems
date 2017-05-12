@@ -2,6 +2,6 @@
 An L-system editor.
 
 ![](http://i.imgur.com/GiVgQ85.png)
-![](http://i.imgur.com/CfSzz1F.gifv)
+![](http://imgur.com/CfSzz1F)
 
-[Web Link](https://anuken.github.io/lsystems/).
+[Web Link](https://anuken.github.io/lsystems/)
