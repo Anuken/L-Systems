@@ -139,13 +139,23 @@ public class Control extends RendererModule{
 	private void drawForward(){
 		float sway = swayscl*MathUtils.sin(Timers.time()/swayphase+stack.size()*swayspace);
 		
-		vector.set(len, 0).rotate(-angle+180 + sway);
+		float radians = MathUtils.degRad*(-angle+180 + sway);
 		
-		Draw.color(start, end, (float)stack.size()/(maxstack-3));
-		Draw.line(x, y, x+vector.x, y+vector.y);
+		float nx = len;
+		float ny = 0;
+		float cos = MathUtils.cos(radians);
+		float sin = MathUtils.sin(radians);
+		float newX = nx * cos - ny * sin;
+		float newY = nx * sin + ny * cos;
 		
-		x += vector.x;
-		y += vector.y;
+		nx = newX;
+		ny = newY;
+		
+		Draw.color(start, end, (float)stack.size()/(maxstack-2));
+		Draw.line(x, y, x+nx, y+ny);
+		
+		x += nx;
+		y += ny;
 	}
 	
 	private void push(){
