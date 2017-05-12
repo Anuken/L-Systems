@@ -62,7 +62,7 @@ public class UI extends SceneModule{
 			
 			row();
 			
-			new label("Press F to toggle UI");
+			new label("Press ~ to toggle UI");
 			
 		}}.end();
 		
@@ -254,7 +254,7 @@ public class UI extends SceneModule{
 	
 	@Override
 	public void update(){
-		if(Inputs.keyUp(Keys.F))
+		if(Inputs.keyUp(Keys.GRAVE))
 			visible = !visible;
 		
 		if(visible){

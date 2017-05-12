@@ -9,7 +9,6 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Pools;
 
 import io.anuke.ucore.core.Draw;
 import io.anuke.ucore.core.Graphics;
@@ -137,6 +136,19 @@ public class Control extends RendererModule{
 		}
 	}
 	
+	private void push(){
+		stack.push(new Vector3(x, y, angle));
+		maxstack = Math.max(stack.size(), maxstack);
+	}
+	
+	private void pop(){
+		if(stack.isEmpty()) return;
+		Vector3 vec = stack.pop();
+		x = vec.x;
+		y = vec.y;
+		angle = vec.z;
+	}
+	
 	private void drawForward(){
 		float sway = swayscl*MathUtils.sin(Timers.time()/swayphase+stack.size()*swayspace);
 		
@@ -159,20 +171,6 @@ public class Control extends RendererModule{
 		
 		x += nx;
 		y += ny;
-	}
-	
-	private void push(){
-		stack.push(Pools.obtain(Vector3.class).set(x, y, angle));
-		maxstack = Math.max(stack.size(), maxstack);
-	}
-	
-	private void pop(){
-		if(stack.isEmpty()) return;
-		Vector3 vec = stack.pop();
-		x = vec.x;
-		y = vec.y;
-		angle = vec.z;
-		Pools.free(vec);
 	}
 	
 	private void input(){
