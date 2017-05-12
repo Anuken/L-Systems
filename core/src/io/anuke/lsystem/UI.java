@@ -66,7 +66,7 @@ public class UI extends SceneModule{
 		}}.end();;
 		
 		new table(){{
-			atop();
+			abottom();
 			aright();
 			new table(){{
 				get().background("button");
@@ -103,7 +103,7 @@ public class UI extends SceneModule{
 		
 		new table(){{
 			abottom();
-			aright();
+			aleft();
 			new table(){{
 				get().pad(20);
 				get().background("button");
