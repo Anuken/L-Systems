@@ -46,9 +46,7 @@ public class Control extends RendererModule{
 	private float x, y;
 	
 	public Control(){
-		cameraScale = 1f;
-		
-		//setPixelation();
+		cameraScale = 1;
 	}
 	
 	public void init(){

@@ -27,7 +27,7 @@ public class UI extends SceneModule{
 	@Override
 	public void init(){
 		Dialog.closePadR -= 1;
-		styles.font().setUseIntegerPositions(true);
+		skin.font().setUseIntegerPositions(true);
 		
 		picker = new ColorPicker();
 		picker.colorChanged(c->{
@@ -62,7 +62,7 @@ public class UI extends SceneModule{
 			
 			row();
 			
-			new label("Press ~ to toggle UI");
+			new label("Press Q to toggle UI");
 			
 		}}.end();
 		
@@ -254,7 +254,7 @@ public class UI extends SceneModule{
 	
 	@Override
 	public void update(){
-		if(Inputs.keyUp(Keys.GRAVE))
+		if(Inputs.keyUp(Keys.Q))
 			visible = !visible;
 		
 		if(visible){

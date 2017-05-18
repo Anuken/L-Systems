@@ -10,7 +10,7 @@ public class DesktopLauncher {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setTitle("LSystems");
 		config.setMaximized(true);
-		config.useVsync(false);
+		//config.useVsync(false);
 		new Lwjgl3Application(new LSystems(), config);
 	}
 }
