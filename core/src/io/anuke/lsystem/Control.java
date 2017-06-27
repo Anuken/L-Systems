@@ -3,13 +3,17 @@ package io.anuke.lsystem;
 import java.util.HashMap;
 import java.util.Stack;
 
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Json;
 
+import io.anuke.ucore.UCore;
 import io.anuke.ucore.core.Draw;
 import io.anuke.ucore.core.Graphics;
 import io.anuke.ucore.core.Inputs;
@@ -178,6 +182,15 @@ public class Control extends RendererModule{
 		if(Inputs.scrolled()){
 			camera.zoom = Mathf.clamp(camera.zoom-Inputs.scroll()/5f*delta(), 0.1f, 10f);
 			camera.update();
+		}
+		
+		if(Inputs.keyUp(Keys.SPACE) && Gdx.app.getType() != ApplicationType.WebGL){
+			LSystemData data = new LSystemData(task.getCurrent().toString(), iterations, 
+					swayspace, swayphase, swayscl, len, space, start, end);
+			FileHandle file = Gdx.files.local("lsystem.json");
+
+			Gdx.files.local("lsystem.json").writeString(new Json().toJson(data), false);
+			UCore.log("File written to " + file.toString());
 		}
 		
 		if(!(Vars.ui.hasMouse() && !Inputs.keyDown(Keys.CONTROL_LEFT))){
