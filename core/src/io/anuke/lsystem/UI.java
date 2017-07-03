@@ -4,13 +4,16 @@ import static io.anuke.lsystem.Vars.control;
 
 import java.util.HashMap;
 
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Interpolation;
 
 import io.anuke.ucore.core.Draw;
 import io.anuke.ucore.core.Inputs;
 import io.anuke.ucore.modules.SceneModule;
+import io.anuke.ucore.scene.actions.Actions;
 import io.anuke.ucore.scene.builders.*;
 import io.anuke.ucore.scene.ui.*;
 import io.anuke.ucore.scene.ui.TextField.TextFieldStyle;
@@ -47,6 +50,72 @@ public class UI extends SceneModule{
 		
 		build.begin();
 		
+		if(Gdx.app.getType() == ApplicationType.Desktop)
+		new table(){{
+			atop();
+			aright();
+			
+			new table("button"){{
+				get().pad(10);
+				
+				new label("Exporting").colspan(2).padBottom(10);
+				
+				row();
+				
+				new label("Path: ");
+				
+				new field(control.getExportFilePath(), f->{
+					control.setExportFilePath(f);
+				});
+				
+				row().padTop(10);
+				
+				new label("Filename: ");
+				
+				new field("out", f->{
+					control.setExportFilename(f);
+				});
+				
+				row();
+				
+				new button("Export", ()->{
+					control.exportFile();
+				}).colspan(2).padTop(10).fillX();
+				
+			}}.end();
+			
+			row().padTop(10);
+			
+			new table("button"){{
+				get().pad(10);
+				
+				new label("Importing").colspan(2).padBottom(10);
+				
+				row();
+				
+				new label("Path: ");
+				
+				new field(control.getImportFilePath(), f->{
+					control.setImportFilePath(f);
+				});
+				
+				row().padTop(10);
+				
+				new label("Filename: ");
+				
+				new field("out", f->{
+					control.setImportFilename(f);
+				});
+				
+				row();
+				
+				new button("Import", ()->{
+					control.importFile();
+				}).colspan(2).padTop(10).fillX();
+				
+			}}.end();
+		}}.end();
+		
 		new table(){{
 			atop();
 			aleft();
@@ -75,12 +144,11 @@ public class UI extends SceneModule{
 		new table(){{
 			abottom();
 			aright();
-			new table(){{
-				get().background("button");
+			new table("button"){{
 				get().pad(10);
 				
 				new label("Axiom: ").right();
-				get().addField("X", c->{
+				get().addField(control.getAxiom(), c->{
 					if(!c.isEmpty())
 					control.setAxiom(c.toUpperCase());
 				});
@@ -111,9 +179,8 @@ public class UI extends SceneModule{
 		new table(){{
 			abottom();
 			aleft();
-			new table(){{
+			new table("button"){{
 				get().pad(20);
-				get().background("button");
 				
 				TextButton start = new TextButton("Select");
 				start.add(new ColorImage(control.startColor())).size(26);
@@ -140,7 +207,7 @@ public class UI extends SceneModule{
 				row();
 				
 				new label("Iterations: ");
-				get().addField("6", s->{
+				get().addField(""+control.getIterations(), s->{
 					int out = Strings.parseInt(s);
 					if(out != Integer.MIN_VALUE){
 						control.setIterations(out);
@@ -150,9 +217,9 @@ public class UI extends SceneModule{
 				row();
 				
 				new label("Angle: ");
-				get().addField("25", s->{
-					int out = Strings.parseInt(s);
-					if(out != Integer.MIN_VALUE){
+				get().addField(""+control.getAngle(), s->{
+					float out = Strings.parseFloat(s);
+					if(out != Float.NEGATIVE_INFINITY){
 						control.setAngle(out);
 					}
 				});
@@ -160,9 +227,9 @@ public class UI extends SceneModule{
 				row();
 				
 				new label("Length: ");
-				get().addField("4.0", s->{
+				get().addField(""+control.getLength(), s->{
 					float out = Strings.parseFloat(s);
-					if(out != Float.NaN){
+					if(out != Float.NEGATIVE_INFINITY){
 						control.setLength(out);
 					}
 				});
@@ -170,9 +237,9 @@ public class UI extends SceneModule{
 				row();
 				
 				new label("Thickness: ").padBottom(20);
-				get().addField("1.0", s->{
+				get().addField(""+control.getThickness(), s->{
 					float out = Strings.parseFloat(s);
-					if(out != Float.NaN){
+					if(out != Float.NEGATIVE_INFINITY){
 						Draw.thick(out);
 					}
 				}).padBottom(20);
@@ -181,9 +248,9 @@ public class UI extends SceneModule{
 				
 
 				new label("Sway Scale: ");
-				get().addField("2.0", s->{
+				get().addField(""+control.getSwayScale(), s->{
 					float out = Strings.parseFloat(s);
-					if(out != Float.NaN){
+					if(out != Float.NEGATIVE_INFINITY){
 						control.setSwayScale(out);
 					}
 				});
@@ -191,9 +258,9 @@ public class UI extends SceneModule{
 				row();
 				
 				new label("Sway Phase: ");
-				get().addField("15.0", s->{
+				get().addField(""+control.getSwayPhase(), s->{
 					float out = Strings.parseFloat(s);
-					if(out != Float.NaN){
+					if(out != Float.NEGATIVE_INFINITY){
 						control.setSwayPhase(out);
 					}
 				});
@@ -201,9 +268,9 @@ public class UI extends SceneModule{
 				row();
 				
 				new label("Sway Space: ");
-				get().addField("1.0", s->{
+				get().addField(""+control.getSwaySpace(), s->{
 					float out = Strings.parseFloat(s);
-					if(out != Float.NaN){
+					if(out != Float.NEGATIVE_INFINITY){
 						control.setSwaySpace(out);
 					}
 				});
@@ -261,6 +328,13 @@ public class UI extends SceneModule{
 			scene.act();
 			scene.draw();
 		}
+	}
+	
+	public void showMessage(String string){
+		Table table = fill();
+		table.top();
+		table.add(string);
+		table.addAction(Actions.sequence(Actions.fadeOut(4f, Interpolation.fade), Actions.removeActor()));
 	}
 	
 }

@@ -3,7 +3,6 @@ package io.anuke.lsystem;
 import java.util.HashMap;
 import java.util.Stack;
 
-import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
@@ -14,9 +13,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Json;
 
 import io.anuke.ucore.UCore;
-import io.anuke.ucore.core.Draw;
-import io.anuke.ucore.core.Graphics;
-import io.anuke.ucore.core.Inputs;
+import io.anuke.ucore.core.*;
+import io.anuke.ucore.lsystem.LSystemData;
 import io.anuke.ucore.modules.RendererModule;
 import io.anuke.ucore.scene.utils.Cursors;
 import io.anuke.ucore.util.Mathf;
@@ -28,6 +26,7 @@ public class Control extends RendererModule{
 	final private Color start = Color.valueOf("37682c");
 	final private Color end = Color.valueOf("94ac62");
 	final private Stack<Vector3> stack = new Stack<>();
+	final private Json json = new Json();
 	private float len = 4f;
 	private float space = 25;
 	
@@ -49,6 +48,12 @@ public class Control extends RendererModule{
 	private float angle = 90;
 	private float x, y;
 	
+	private String expath = "Projects/Wobble/core/assets/trees";
+	private String exfilename = "out";
+	
+	private String impath = "Projects/Wobble/core/assets/trees";
+	private String imfilename = "out";
+	
 	public Control(){
 		cameraScale = 1;
 	}
@@ -65,6 +70,30 @@ public class Control extends RendererModule{
 	
 	public Color endColor(){
 		return end;
+	}
+	
+	public void setExportFilename(String name){
+		exfilename = name;
+	}
+	
+	public String getExportFilePath(){
+		return expath;
+	}
+	
+	public void setExportFilePath(String name){
+		expath = name;
+	}
+	
+	public void setImportFilename(String name){
+		imfilename = name;
+	}
+	
+	public String getImportFilePath(){
+		return impath;
+	}
+	
+	public void setImportFilePath(String name){
+		impath = name;
 	}
 	
 	public void setSwaySpace(float sspace){
@@ -101,6 +130,38 @@ public class Control extends RendererModule{
 	
 	public HashMap<Character, String> rules(){
 		return rules;
+	}
+	
+	public String getAxiom(){
+		return axiom;
+	}
+	
+	public int getIterations(){
+		return iterations;
+	}
+	
+	public float getAngle(){
+		return space;
+	}
+	
+	public float getThickness(){
+		return Draw.getThickness();
+	}
+	
+	public float getLength(){
+		return len;
+	}
+	
+	public float getSwayScale(){
+		return swayscl;
+	}
+	
+	public float getSwaySpace(){
+		return swayspace;
+	}
+	
+	public float getSwayPhase(){
+		return swayphase;
 	}
 	
 	public int getCharacters(){
@@ -175,6 +236,58 @@ public class Control extends RendererModule{
 		y += ny;
 	}
 	
+	public void exportFile(){
+		try{
+			
+			LSystemData data = new LSystemData(axiom, rules, iterations, 
+					swayspace, swayphase, swayscl, len, space, Draw.getThickness(), start, end);
+			FileHandle file = Gdx.files.absolute(Gdx.files.absolute(System.getProperty("user.home")) 
+					+ "/" + expath + "/" + exfilename+".json");
+
+			file.writeString(json.toJson(data), false);
+			UCore.log("File written to " + file.toString());
+			
+			Vars.ui.showMessage("File written to " + file.toString());
+		
+		}catch (Exception e){
+			Vars.ui.showMessage("File write failed: \n" + e.getClass() + ": " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+	
+	public void importFile(){
+		try{
+			
+			FileHandle file = Gdx.files.absolute(Gdx.files.absolute(System.getProperty("user.home")) 
+					+ "/" + impath + "/" + imfilename+".json");
+			
+			LSystemData data = json.fromJson(LSystemData.class, file);
+			data.normalize();
+			rules = data.rules;
+			axiom = data.axiom;
+			end.set(data.end);
+			start.set(data.start);
+			iterations = data.iterations;
+			swayspace = data.swayspace;
+			swayscl = data.swayscl;
+			swayphase = data.swayphase;
+			len = data.len;
+			space = data.space;
+			Draw.thickness(data.thickness);
+			
+			generate();
+			
+			DrawContext.scene.clear();
+			Vars.ui.init();
+			
+			Vars.ui.showMessage("File opened from " + file.toString());
+			
+		}catch (Exception e){
+			Vars.ui.showMessage("File open failed: \n" + e.getClass() + ": " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+	
 	private void input(){
 		if(Inputs.keyDown(Keys.ESCAPE))
 			Gdx.app.exit();
@@ -182,15 +295,6 @@ public class Control extends RendererModule{
 		if(Inputs.scrolled()){
 			camera.zoom = Mathf.clamp(camera.zoom-Inputs.scroll()/5f*delta(), 0.1f, 10f);
 			camera.update();
-		}
-		
-		if(Inputs.keyUp(Keys.SPACE) && Gdx.app.getType() != ApplicationType.WebGL){
-			LSystemData data = new LSystemData(task.getCurrent().toString(), iterations, 
-					swayspace, swayphase, swayscl, len, space, start, end);
-			FileHandle file = Gdx.files.local("lsystem.json");
-
-			Gdx.files.local("lsystem.json").writeString(new Json().toJson(data), false);
-			UCore.log("File written to " + file.toString());
 		}
 		
 		if(!(Vars.ui.hasMouse() && !Inputs.keyDown(Keys.CONTROL_LEFT))){
