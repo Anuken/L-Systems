@@ -1,8 +1,8 @@
 package io.anuke.lsystem;
 
-import io.anuke.ucore.modules.Core;
+import io.anuke.ucore.modules.ModuleCore;
 
-public class LSystems extends Core {
+public class LSystems extends ModuleCore {
 	
 	@Override
 	public void init(){

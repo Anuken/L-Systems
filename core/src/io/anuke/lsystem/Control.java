@@ -1,5 +1,7 @@
 package io.anuke.lsystem;
 
+import static io.anuke.ucore.core.Core.camera;
+
 import java.util.HashMap;
 import java.util.Stack;
 
@@ -18,7 +20,6 @@ import io.anuke.ucore.lsystem.LSystemData;
 import io.anuke.ucore.modules.RendererModule;
 import io.anuke.ucore.scene.utils.Cursors;
 import io.anuke.ucore.util.Mathf;
-import io.anuke.ucore.util.Timers;
 
 public class Control extends RendererModule{
 	//private GifRecorder recorder = new GifRecorder(batch);
@@ -48,14 +49,19 @@ public class Control extends RendererModule{
 	private float angle = 90;
 	private float x, y;
 	
-	private String expath = "Projects/Wobble/core/assets/trees";
+	private String expath = "";
 	private String exfilename = "out";
 	
-	private String impath = "Projects/Wobble/core/assets/trees";
+	private String impath = "";
 	private String imfilename = "out";
 	
 	public Control(){
-		cameraScale = 1;
+		Core.cameraScale = 1;
+		
+		if(System.getProperty("user.name").equals("anuke")){
+			expath = "LSystemExport/";
+			impath = "LSystemExport/";
+		}
 	}
 	
 	public void init(){
@@ -250,7 +256,7 @@ public class Control extends RendererModule{
 			Vars.ui.showMessage("File written to " + file.toString());
 		
 		}catch (Exception e){
-			Vars.ui.showMessage("File write failed: \n" + e.getClass() + ": " + e.getMessage());
+			Vars.ui.showMessage("File write failed: \n" + e.getClass() + ": " + e.getMessage(), Color.SCARLET);
 			e.printStackTrace();
 		}
 	}
@@ -277,13 +283,13 @@ public class Control extends RendererModule{
 			
 			generate();
 			
-			DrawContext.scene.clear();
+			Core.scene.clear();
 			Vars.ui.init();
 			
 			Vars.ui.showMessage("File opened from " + file.toString());
 			
 		}catch (Exception e){
-			Vars.ui.showMessage("File open failed: \n" + e.getClass() + ": " + e.getMessage());
+			Vars.ui.showMessage("File open failed: \n" + e.getMessage(), Color.SCARLET);
 			e.printStackTrace();
 		}
 	}
@@ -330,7 +336,7 @@ public class Control extends RendererModule{
 			task.iterate();
 		}
 		
-		Timers.update(Gdx.graphics.getDeltaTime()*60f);
+		Timers.update();
 		
 		drawDefault();
 		

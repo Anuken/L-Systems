@@ -12,18 +12,20 @@ import com.badlogic.gdx.math.Interpolation;
 
 import io.anuke.ucore.core.Draw;
 import io.anuke.ucore.core.Inputs;
+import io.anuke.ucore.core.Timers;
 import io.anuke.ucore.modules.SceneModule;
 import io.anuke.ucore.scene.actions.Actions;
 import io.anuke.ucore.scene.builders.*;
 import io.anuke.ucore.scene.ui.*;
 import io.anuke.ucore.scene.ui.TextField.TextFieldStyle;
 import io.anuke.ucore.scene.ui.layout.Table;
+import io.anuke.ucore.scene.utils.Elements;
 import io.anuke.ucore.util.Strings;
-import io.anuke.ucore.util.Timers;
 
 public class UI extends SceneModule{
 	Table ruletable;
 	Dialog colordialog;
+	Dialog importdialog, exportdialog;
 	ColorPicker picker;
 	boolean visible = true;
 	
@@ -47,74 +49,69 @@ public class UI extends SceneModule{
 			colordialog.hide();
 		}).size(90, 40).padBottom(2);
 		
+		importdialog = new Dialog("Import", "dialog");
+		importdialog.addCloseButton();
+		
+		exportdialog = new Dialog("Export", "dialog");
+		exportdialog.addCloseButton();
+		
+		
+		//import
+		build.begin(importdialog.content());
+		importdialog.content().pad(10);
+		
+		new label("Path: ").left();
+		
+		new field(control.getImportFilePath(), f->{
+			control.setImportFilePath(f);
+		}).width(300f);
+		
+		importdialog.content().row().padTop(10);
+		
+		new label("Filename: ");
+		
+		new field("out", f->{
+			control.setImportFilename(f);
+		}).width(300f);
+		
+		importdialog.content().row();
+		
+		new button("Import", ()->{
+			control.importFile();
+			importdialog.hide();
+		}).colspan(2).padTop(10).fillX();
+		build.end();
+		
+		//export
+		build.begin(exportdialog.content());
+		exportdialog.content().pad(10);
+		
+		new label("Exporting").colspan(2).padBottom(10);
+		
+		exportdialog.content().row();
+		
+		new label("Path: ").left();
+		
+		new field(control.getExportFilePath(), f->{
+			control.setExportFilePath(f);
+		}).width(300f);
+		
+		exportdialog.content().row().padTop(10);
+		
+		new label("Filename: ");
+		
+		new field("out", f->{
+			control.setExportFilename(f);
+		}).width(300f);
+		
+		exportdialog.content().row();
+		
+		new button("Export", ()->{
+			control.exportFile();
+		}).colspan(2).padTop(10).fillX();
+		build.end();
 		
 		build.begin();
-		
-		if(Gdx.app.getType() == ApplicationType.Desktop)
-		new table(){{
-			atop();
-			aright();
-			
-			new table("button"){{
-				get().pad(10);
-				
-				new label("Exporting").colspan(2).padBottom(10);
-				
-				row();
-				
-				new label("Path: ");
-				
-				new field(control.getExportFilePath(), f->{
-					control.setExportFilePath(f);
-				});
-				
-				row().padTop(10);
-				
-				new label("Filename: ");
-				
-				new field("out", f->{
-					control.setExportFilename(f);
-				});
-				
-				row();
-				
-				new button("Export", ()->{
-					control.exportFile();
-				}).colspan(2).padTop(10).fillX();
-				
-			}}.end();
-			
-			row().padTop(10);
-			
-			new table("button"){{
-				get().pad(10);
-				
-				new label("Importing").colspan(2).padBottom(10);
-				
-				row();
-				
-				new label("Path: ");
-				
-				new field(control.getImportFilePath(), f->{
-					control.setImportFilePath(f);
-				});
-				
-				row().padTop(10);
-				
-				new label("Filename: ");
-				
-				new field("out", f->{
-					control.setImportFilename(f);
-				});
-				
-				row();
-				
-				new button("Import", ()->{
-					control.importFile();
-				}).colspan(2).padTop(10).fillX();
-				
-			}}.end();
-		}}.end();
 		
 		new table(){{
 			atop();
@@ -179,6 +176,20 @@ public class UI extends SceneModule{
 		new table(){{
 			abottom();
 			aleft();
+			
+			if(Gdx.app.getType() != ApplicationType.WebGL){
+				
+				new button("Import", ()->{
+					importdialog.show();
+				}).fillX();
+				
+				row();
+				new button("Export", ()->{
+					exportdialog.show();
+				}).fillX();
+				row();
+			}
+			
 			new table("button"){{
 				get().pad(20);
 				
@@ -291,7 +302,7 @@ public class UI extends SceneModule{
 		HashMap<Character, String> rules = control.rules();
 		
 		for(Character c : rules.keySet()){
-			TextField field = ruletable.newField(c+"", s->{
+			TextField field = Elements.newField(c+"", s->{
 				if(s.isEmpty()) return;
 				rules.put(s.toUpperCase().toCharArray()[0], rules.get(c));
 				control.generate();
@@ -331,9 +342,13 @@ public class UI extends SceneModule{
 	}
 	
 	public void showMessage(String string){
+		showMessage(string, Color.WHITE);
+	}
+	
+	public void showMessage(String string, Color color){
 		Table table = fill();
 		table.top();
-		table.add(string);
+		table.add(string, color);
 		table.addAction(Actions.sequence(Actions.fadeOut(4f, Interpolation.fade), Actions.removeActor()));
 	}
 	
