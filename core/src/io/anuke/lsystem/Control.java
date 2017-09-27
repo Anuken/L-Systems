@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.*;
+import com.badlogic.gdx.utils.JsonWriter.OutputType;
 
 import io.anuke.ucore.UCore;
 import io.anuke.ucore.core.*;
@@ -27,8 +28,6 @@ import io.anuke.ucore.scene.utils.Cursors;
 import io.anuke.ucore.util.Mathf;
 
 public class Control extends RendererModule{
-	//private GifRecorder recorder = new GifRecorder(batch);
-	
 	final private Color start = Color.valueOf("37682c");
 	final private Color end = Color.valueOf("94ac62");
 	final private Stack<Vector3> stack = new Stack<>();
@@ -40,6 +39,7 @@ public class Control extends RendererModule{
 	private boolean moving = false;
 	private boolean sorting = true, sortMode = true, colorBoost = false;
 	private float lastx, lasty;
+	private float targetZoom = 1f;
 	
 	private float swayscl = 2f;
 	private float swayphase = 15f;
@@ -64,6 +64,8 @@ public class Control extends RendererModule{
 	
 	public Control(){
 		Core.cameraScale = 1;
+		
+		json.setOutputType(OutputType.json);
 		
 		if(System.getProperty("user.name").equals("anuke")){
 			expath = "LSystemExport/";
@@ -326,11 +328,12 @@ public class Control extends RendererModule{
 			Gdx.app.exit();
 		
 		if(Inputs.scrolled()){
-			camera.zoom = Mathf.clamp(camera.zoom-Inputs.scroll()/5f*delta(), 0.1f, 10f);
+			float speed = (Inputs.keyDown(Keys.SHIFT_LEFT) ? 0.05f : 0.2f);
+			targetZoom = Mathf.clamp(targetZoom-Inputs.scroll()*speed*delta(), 0.1f, 10f);
 			camera.update();
 		}
 		
-		if(!(Vars.ui.hasMouse() && !Inputs.keyDown(Keys.CONTROL_LEFT))){
+		if(!Vars.ui.hasMouse() && !Inputs.keyDown(Keys.CONTROL_LEFT)){
 			if(Inputs.buttonUp(Buttons.LEFT)){
 				lastx = Graphics.mouse().x;
 				lasty = Graphics.mouse().y;
@@ -401,10 +404,12 @@ public class Control extends RendererModule{
 				Pixmap out = PixmapUtils.crop(pix, minx, miny, maxx - minx, maxy - miny);
 				PixmapUtils.flip(out);
 				
-				PixmapIO.writePNG(Gdx.files.local("screenshots/screenshot-" + TimeUtils.millis() + ".png"), out);
+				FileHandle file = Gdx.files.local("screenshots/screenshot-" + TimeUtils.millis() + ".png");
+				
+				PixmapIO.writePNG(file, out);
 						
 				out.dispose();
-				Vars.ui.showMessage("Screenshot taken succesfully");
+				Vars.ui.showMessage("Screenshot exported to " + file.toString());
 			}else{
 				Vars.ui.showMessage("Screen is empty, no screenshot taken");
 			}
@@ -415,6 +420,8 @@ public class Control extends RendererModule{
 	
 	public void update(){
 		input();
+		
+		camera.zoom = Mathf.lerp(camera.zoom, targetZoom, 0.2f*Timers.delta());
 		
 		if(!task.isDone()){
 			maxstack = 0;

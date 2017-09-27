@@ -143,6 +143,9 @@ public class UI extends SceneModule{
 			row();
 			
 			new label("<Q> to toggle UI").left();
+			row();
+			
+			new label("<P> to take a screenshot").left();
 			
 		}}.end();
 		
@@ -369,7 +372,7 @@ public class UI extends SceneModule{
 		Table table = fill();
 		table.top();
 		table.add(string, color);
-		table.addAction(Actions.sequence(Actions.fadeOut(4f, Interpolation.fade), Actions.removeActor()));
+		table.addAction(Actions.sequence(Actions.fadeOut(8f, Interpolation.fade), Actions.removeActor()));
 	}
 	
 }

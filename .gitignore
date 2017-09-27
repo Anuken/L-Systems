@@ -1,5 +1,7 @@
-## Java
 screenshots/
+*.gif
+
+## Java
 
 *.class
 *.war
