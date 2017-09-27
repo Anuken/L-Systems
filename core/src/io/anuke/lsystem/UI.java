@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Interpolation;
@@ -54,6 +55,14 @@ public class UI extends SceneModule{
 		
 		exportdialog = new Dialog("Export", "dialog");
 		exportdialog.addCloseButton();
+		
+		importdialog.shown(()->{
+			scene.setKeyboardFocus(null);
+		});
+		
+		exportdialog.shown(()->{
+			scene.setKeyboardFocus(null);
+		});
 		
 		
 		//import
@@ -108,6 +117,7 @@ public class UI extends SceneModule{
 		
 		new button("Export", ()->{
 			control.exportFile();
+			exportdialog.hide();
 		}).colspan(2).padTop(10).fillX();
 		build.end();
 		
@@ -116,19 +126,23 @@ public class UI extends SceneModule{
 		new table(){{
 			atop();
 			aleft();
-			new label(()->{
-				return Gdx.graphics.getFramesPerSecond() + " FPS";
-			}).left();
 			
+			new label(()->Gdx.graphics.getFramesPerSecond() + " FPS").left();
 			row();
 			
-			new label(()->{
-				return control.getCharacters() + " chars";
-			}).left();
-			
+			new label(()->control.getCharacters() + " chars").left();
 			row();
 			
-			new label("Press Q to toggle UI");
+			new label(()->("<L> Sorting: " + (control.isSorting() ? "enabled" : "disabled"))).left();
+			row();
+			
+			new label(()->"<M> Sort mode: " + (control.sortMode() ? "ascending" : "descending")).left();
+			row();
+			
+			new label(()->"<C> Color boost: " + (control.colorBoost() ? "enabled" : "disabled")).left();
+			row();
+			
+			new label("<Q> to toggle UI").left();
 			
 		}}.end();
 		
@@ -141,6 +155,20 @@ public class UI extends SceneModule{
 		new table(){{
 			abottom();
 			aright();
+			
+			if(Gdx.app.getType() != ApplicationType.WebGL){
+				
+				new button("Import", ()->{
+					importdialog.show();
+				}).fillX();
+				
+				row();
+				new button("Export", ()->{
+					exportdialog.show();
+				}).fillX();
+				row();
+			}
+			
 			new table("button"){{
 				get().pad(10);
 				
@@ -176,19 +204,6 @@ public class UI extends SceneModule{
 		new table(){{
 			abottom();
 			aleft();
-			
-			if(Gdx.app.getType() != ApplicationType.WebGL){
-				
-				new button("Import", ()->{
-					importdialog.show();
-				}).fillX();
-				
-				row();
-				new button("Export", ()->{
-					exportdialog.show();
-				}).fillX();
-				row();
-			}
 			
 			new table("button"){{
 				get().pad(20);
@@ -334,6 +349,11 @@ public class UI extends SceneModule{
 	public void update(){
 		if(Inputs.keyUp(Keys.Q))
 			visible = !visible;
+		
+		if(Inputs.buttonUp(Buttons.LEFT) && !hasMouse()){
+			scene.setScrollFocus(null);
+			scene.setKeyboardFocus(null);
+		}
 		
 		if(visible){
 			scene.act();

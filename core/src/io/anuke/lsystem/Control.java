@@ -5,17 +5,22 @@ import static io.anuke.ucore.core.Core.camera;
 import java.util.HashMap;
 import java.util.Stack;
 
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Pixmap.Blending;
+import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.*;
 
 import io.anuke.ucore.UCore;
 import io.anuke.ucore.core.*;
+import io.anuke.ucore.graphics.PixmapUtils;
 import io.anuke.ucore.lsystem.LSystemData;
 import io.anuke.ucore.modules.RendererModule;
 import io.anuke.ucore.scene.utils.Cursors;
@@ -27,11 +32,13 @@ public class Control extends RendererModule{
 	final private Color start = Color.valueOf("37682c");
 	final private Color end = Color.valueOf("94ac62");
 	final private Stack<Vector3> stack = new Stack<>();
+	final private Array<Line> lines = new Array<Line>();
 	final private Json json = new Json();
 	private float len = 4f;
 	private float space = 25;
 	
 	private boolean moving = false;
+	private boolean sorting = true, sortMode = true, colorBoost = false;
 	private float lastx, lasty;
 	
 	private float swayscl = 2f;
@@ -76,6 +83,18 @@ public class Control extends RendererModule{
 	
 	public Color endColor(){
 		return end;
+	}
+	
+	public boolean isSorting(){
+		return sorting;
+	}
+	
+	public boolean sortMode(){
+		return sortMode;
+	}
+	
+	public boolean colorBoost(){
+		return colorBoost;
 	}
 	
 	public void setExportFilename(String name){
@@ -189,6 +208,10 @@ public class Control extends RendererModule{
 		x = y = 0;
 		
 		stack.clear();
+		
+		if(sorting){
+			lines.clear();
+		}
 	}
 	
 	private void draw(char c){
@@ -235,8 +258,12 @@ public class Control extends RendererModule{
 		
 		float scl = (float)stack.size()/(maxstack-2);
 		
-		Draw.color(start, end, scl);
-		Draw.line(x, y, x+nx, y+ny);
+		if(sorting){
+			lines.add(new Line(stack.size(), x, y, x+nx, y+ny, scl));
+		}else{
+			Draw.color(start, end, scl);
+			Draw.line(x, y, x+nx, y+ny);
+		}
 		
 		x += nx;
 		y += ny;
@@ -326,6 +353,64 @@ public class Control extends RendererModule{
 				lasty = Graphics.mouse().y;
 			}
 		}
+		
+		if(Inputs.keyUp(Keys.L)){
+			sorting = !sorting;
+		}
+		
+		if(Inputs.keyUp(Keys.M)){
+			sortMode = !sortMode;
+		}
+		
+		if(Inputs.keyUp(Keys.C)){
+			colorBoost = !colorBoost;
+		}
+		
+	}
+	
+	void checkScreenshot(){
+		if(Inputs.keyUp(Keys.P) && Gdx.app.getType() != ApplicationType.WebGL){
+			Pixmap pix = ScreenUtils.getFrameBufferPixmap(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+			int minx = Integer.MAX_VALUE, miny = Integer.MAX_VALUE, maxx = 0, maxy = 0;
+			int empty = Color.rgba8888(clearColor);
+			
+			for(int x = 0; x < pix.getWidth(); x ++){
+				for(int y = 0; y < pix.getHeight(); y ++){
+					int pixel = pix.getPixel(x, y);
+					
+					if(pixel != empty){
+						minx = Math.min(x, minx);
+						miny = Math.min(y, miny);
+						maxx = Math.max(x, maxx);
+						maxy = Math.max(y, maxy);
+					}
+				}
+			}
+			
+			if(!(maxx == 0 || maxy == 0)){
+				//color to alpha
+				pix.setBlending(Blending.None);
+				for(int x = minx; x < maxx; x ++){
+					for(int y = miny; y < maxy; y ++){
+						if(pix.getPixel(x, y) == empty){
+							pix.drawPixel(x, y, 0);
+						}
+					}
+				}
+				
+				Pixmap out = PixmapUtils.crop(pix, minx, miny, maxx - minx, maxy - miny);
+				PixmapUtils.flip(out);
+				
+				PixmapIO.writePNG(Gdx.files.local("screenshots/screenshot-" + TimeUtils.millis() + ".png"), out);
+						
+				out.dispose();
+				Vars.ui.showMessage("Screenshot taken succesfully");
+			}else{
+				Vars.ui.showMessage("Screen is empty, no screenshot taken");
+			}
+			
+			pix.dispose();
+		}
 	}
 	
 	public void update(){
@@ -342,14 +427,27 @@ public class Control extends RendererModule{
 		
 		clear();
 		
-		//recorder.update();
-		Inputs.update();
+		checkScreenshot();
+		
+		if(!Vars.ui.hasDialog()){
+			record();
+		}
+		
 	}
 	
 	public void draw(){
 		for(int i = 0; i < task.getCurrent().length(); i ++){
 			draw(task.getCurrent().charAt(i));
 		}
+		
+		if(sorting){
+			lines.sort();
+			for(Line line : lines){
+				Draw.color(start, end, (float)line.stack/(maxstack - (colorBoost ? 2 : 0)));
+				Draw.line(line.x1, line.y1, line.x2, line.y2);
+			}
+		}
+		
 		Draw.color();
 	}
 	
@@ -364,5 +462,26 @@ public class Control extends RendererModule{
 	public void resize(){
 		setCamera(200, 200);
 		camera.update();
+	}
+	
+	class Line implements Comparable<Line>{
+		int stack;
+		float x1, y1, x2, y2;
+		float color;
+		
+		Line(int stack, float x1, float y1, float x2, float y2, float color){
+			this.stack = stack;
+			this.x1 = x1;
+			this.y1 = y1;
+			this.x2 = x2;
+			this.y2 = y2;
+			this.color = color;
+		}
+
+		@Override
+		public int compareTo(Line l){
+			return (l.stack == stack) ? 0 : sortMode? (stack > l.stack ? -1 : 1) : (stack > l.stack ? 1 : -1);
+		}
+		
 	}
 }
