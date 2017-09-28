@@ -130,7 +130,18 @@ public class UI extends SceneModule{
 			new label(()->Gdx.graphics.getFramesPerSecond() + " FPS").left();
 			row();
 			
-			new label(()->control.getCharacters() + " chars").left();
+			new label(()->{
+				return control.getCharacters() + " chars";
+			}).left();
+			row();
+			
+			new label(()->{
+				if(control.getCharacters() < 50) {
+					return "Chars: " + control.getTask().getCurrent();
+				}else {
+					return "(too long)";
+				}
+				}).left();
 			row();
 			
 			new label(()->("<L> Sorting: " + (control.isSorting() ? "enabled" : "disabled"))).left();
