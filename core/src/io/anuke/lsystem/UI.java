@@ -142,6 +142,9 @@ public class UI extends SceneModule{
 			new label(()->"<C> Color boost: " + (control.colorBoost() ? "enabled" : "disabled")).left();
 			row();
 			
+			new label("<R> to center").left();
+			row();
+			
 			new label("<Q> to toggle UI").left();
 			row();
 			

@@ -370,6 +370,13 @@ public class Control extends RendererModule{
 			if(Inputs.keyUp(Keys.C)){
 				colorBoost = !colorBoost;
 			}
+			
+			if(Inputs.keyUp(Keys.R)){
+				setCamera(0, 0);
+				camera.zoom = 1f;
+				targetZoom = 1f;
+				camera.update();
+			}
 		}
 	}
 	

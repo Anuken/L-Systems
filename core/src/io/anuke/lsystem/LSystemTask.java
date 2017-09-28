@@ -26,6 +26,10 @@ public class LSystemTask{
 		done = false;
 	}
 	
+	public String getAxiom(){
+		return axiom;
+	}
+	
 	public boolean isDone(){
 		return done;
 	}
