@@ -103,6 +103,10 @@ public class Control extends RendererModule{
 		exfilename = name;
 	}
 	
+	public LSystemTask getTask() {
+		return task;
+	}
+	
 	public String getExportFilePath(){
 		return expath;
 	}
