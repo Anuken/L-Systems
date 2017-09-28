@@ -37,7 +37,7 @@ public class UI extends SceneModule{
 		
 		picker = new ColorPicker();
 		picker.colorChanged(c->{
-			
+			//what
 		});
 		
 		colordialog = new Dialog("Select Color");
@@ -177,8 +177,9 @@ public class UI extends SceneModule{
 				
 				new label("Axiom: ").right();
 				get().addField(control.getAxiom(), c->{
-					if(!c.isEmpty())
-					control.setAxiom(c.toUpperCase());
+					if(!c.isEmpty()){
+						control.setAxiom(c.toUpperCase());
+					}
 				});
 				
 				row();
@@ -317,12 +318,13 @@ public class UI extends SceneModule{
 	private void updateRules(){
 		ruletable.clearChildren();
 		
+		//TODO have specific references to each character to prevent duplication bugs and such
 		HashMap<Character, String> rules = control.rules();
 		
 		for(Character c : rules.keySet()){
 			TextField field = Elements.newField(c+"", s->{
 				if(s.isEmpty()) return;
-				rules.put(s.toUpperCase().toCharArray()[0], rules.get(c));
+					rules.put(s.toUpperCase().toCharArray()[0], rules.get(c));
 				control.generate();
 			});
 			
@@ -333,7 +335,7 @@ public class UI extends SceneModule{
 			ruletable.add(field).width(35).padRight(14).grow();
 			
 			ruletable.addField(rules.get(c), s->{
-				rules.put(c, s.toUpperCase());
+				rules.put(field.getText().toUpperCase().toCharArray()[0], s.toUpperCase());
 				control.generate();
 			}).grow().minWidth(240);
 			

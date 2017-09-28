@@ -147,12 +147,10 @@ public class Control extends RendererModule{
 	
 	public void setAngle(float angle){
 		space = angle;
-		generate();
 	}
 	
 	public void setLength(float length){
 		len = length;
-		generate();
 	}
 	
 	public HashMap<Character, String> rules(){
@@ -332,7 +330,7 @@ public class Control extends RendererModule{
 			targetZoom = Mathf.clamp(targetZoom-Inputs.scroll()*speed*delta(), 0.1f, 10f);
 			camera.update();
 		}
-		
+
 		if(!Vars.ui.hasMouse() && !Inputs.keyDown(Keys.CONTROL_LEFT)){
 			if(Inputs.buttonUp(Buttons.LEFT)){
 				lastx = Graphics.mouse().x;
@@ -357,18 +355,22 @@ public class Control extends RendererModule{
 			}
 		}
 		
-		if(Inputs.keyUp(Keys.L)){
-			sorting = !sorting;
-		}
+		if(!Vars.ui.hasDialog() && Vars.ui.scene.getKeyboardFocus() == null){
+			
 		
-		if(Inputs.keyUp(Keys.M)){
-			sortMode = !sortMode;
-		}
 		
-		if(Inputs.keyUp(Keys.C)){
-			colorBoost = !colorBoost;
+			if(Inputs.keyUp(Keys.L)){
+				sorting = !sorting;
+			}
+			
+			if(Inputs.keyUp(Keys.M)){
+				sortMode = !sortMode;
+			}
+			
+			if(Inputs.keyUp(Keys.C)){
+				colorBoost = !colorBoost;
+			}
 		}
-		
 	}
 	
 	void checkScreenshot(){
@@ -434,9 +436,8 @@ public class Control extends RendererModule{
 		
 		clear();
 		
-		checkScreenshot();
-		
-		if(!Vars.ui.hasDialog()){
+		if(!Vars.ui.hasDialog() && Vars.ui.scene.getKeyboardFocus() == null){
+			checkScreenshot();
 			record();
 		}
 		
