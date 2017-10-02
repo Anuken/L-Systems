@@ -19,6 +19,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
 
+import io.anuke.lsystem.evolution.Evolver;
 import io.anuke.ucore.UCore;
 import io.anuke.ucore.core.*;
 import io.anuke.ucore.graphics.PixmapUtils;
@@ -60,7 +61,7 @@ public class Control extends RendererModule{
 	private String exfilename = "out";
 	
 	private String impath = "";
-	private String imfilename = "out";
+	private String imfilename = "evolved";
 	
 	public Control(){
 		Core.cameraScale = 1;
@@ -300,19 +301,7 @@ public class Control extends RendererModule{
 			
 			LSystemData data = json.fromJson(LSystemData.class, file);
 			data.normalize();
-			rules = data.rules;
-			axiom = data.axiom;
-			end.set(data.end);
-			start.set(data.start);
-			iterations = data.iterations;
-			swayspace = data.swayspace;
-			swayscl = data.swayscl;
-			swayphase = data.swayphase;
-			len = data.len;
-			space = data.space;
-			Draw.thickness(data.thickness);
-			
-			generate();
+			setData(data);
 			
 			Core.scene.clear();
 			Vars.ui.init();
@@ -323,6 +312,23 @@ public class Control extends RendererModule{
 			Vars.ui.showMessage("File open failed: \n" + e.getMessage(), Color.SCARLET);
 			e.printStackTrace();
 		}
+	}
+	
+	public void setData(LSystemData data){
+		
+		rules = data.rules;
+		axiom = data.axiom;
+		end.set(data.end);
+		start.set(data.start);
+		iterations = data.iterations;
+		swayspace = data.swayspace;
+		swayscl = data.swayscl;
+		swayphase = data.swayphase;
+		len = data.len;
+		space = data.space;
+		Draw.thickness(data.thickness);
+		
+		generate();
 	}
 	
 	private void input(){
@@ -360,8 +366,6 @@ public class Control extends RendererModule{
 		}
 		
 		if(!Vars.ui.hasDialog() && Vars.ui.scene.getKeyboardFocus() == null){
-			
-		
 		
 			if(Inputs.keyUp(Keys.L)){
 				sorting = !sorting;
@@ -373,6 +377,13 @@ public class Control extends RendererModule{
 			
 			if(Inputs.keyUp(Keys.C)){
 				colorBoost = !colorBoost;
+			}
+			
+			if(Inputs.keyUp(Keys.I)){
+				setData(new Evolver().evolve());
+				
+				Core.scene.clear();
+				Vars.ui.init();
 			}
 			
 			if(Inputs.keyUp(Keys.R)){

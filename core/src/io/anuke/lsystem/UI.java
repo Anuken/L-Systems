@@ -79,7 +79,7 @@ public class UI extends SceneModule{
 		
 		new label("Filename: ");
 		
-		new field("out", f->{
+		new field("evolved", f->{
 			control.setImportFilename(f);
 		}).width(300f);
 		
@@ -160,6 +160,9 @@ public class UI extends SceneModule{
 			row();
 			
 			new label("<P> to take a screenshot").left();
+			row();
+			
+			new label("<I> to evolve").left();
 			
 		}}.end();
 		
