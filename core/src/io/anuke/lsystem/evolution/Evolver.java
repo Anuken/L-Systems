@@ -84,13 +84,14 @@ public class Evolver{
 		for(int i = 0; i < mutations; i++){
 			int rand = Mathf.random(0, insertChars.length + 2);
 			
+			//delete a random character
 			if(Mathf.chance(0.2) && current.length() > 5){
 				int idx = Mathf.random(current.length()-1);
 				current.deleteCharAt(idx);
 				continue;
 			}
-
-			if(rand < insertChars.length){
+			
+			if(rand < insertChars.length){ //insert a random character
 				current.insert(Mathf.random(0, current.length() - 1), insertChars[rand]);
 			}else if(rand <= insertChars.length + 1 && current.length() > 1){
 
