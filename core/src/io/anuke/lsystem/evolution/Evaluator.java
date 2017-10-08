@@ -34,14 +34,49 @@ public enum Evaluator{
 					surface -= (before - 1)/10f;
 				}
 				
-				if(line.y1 < 0 || line.y2 < 0 || line.y1 > 300f || line.y2 > 300f){
+				if(line.y1 < 0 || line.y2 < 0 || line.y1 > maxY || line.y2 > maxY){
 					return -1;
 				}
 			}
 			
 			return surface*4f - volume - Math.abs(max - min);
 		}
+	},
+	xSurface{
+		@Override
+		public float getScore(int branches, Array<Line> lines){
+			
+			float surface = 0f;
+			
+			for(Line line : lines){
+				surface += Math.abs(line.x1 - line.x2);
+				
+				if(line.y1 < 0 || line.y2 < 0 || line.y1 > maxY || line.y2 > maxY){
+					return -1;
+				}
+			}
+			
+			return surface*4f - lines.size;
+		}
+	},
+	ySurface{
+		@Override
+		public float getScore(int branches, Array<Line> lines){
+			
+			float surface = 0f;
+			
+			for(Line line : lines){
+				surface += Math.abs(line.y1 - line.y2);
+				
+				if(line.y1 < 0 || line.y2 < 0 || line.y1 > maxY || line.y2 > maxY){
+					return -1;
+				}
+			}
+			
+			return surface*4f - lines.size;
+		}
 	};
+	static float maxY = 300f;
 	
 	public abstract float getScore(int branches, Array<Line> lines);
 }

@@ -12,10 +12,10 @@ import io.anuke.ucore.util.Mathf;
 
 public class Evolver{
 	int variants = 6;
-	int generations = 500;
+	int generations = 50;
 	int maxMutations = 3;
 	char[] insertChars = { '+', '-', 'F', 'X' };
-	Evaluator eval = Evaluator.leastIntersect;
+	Evaluator eval = Evaluator.xSurface;
 
 	int iterations = 3;
 	String axiom = "X";
