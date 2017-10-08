@@ -48,18 +48,26 @@ public enum Evaluator{
 			float surfacearea = 0f;
 			
 			for(Line line : tree.lines){
-				//volume is represented as the length of the line
-				//volume += Math.sqrt(Math.pow(line.x1-line.x2, 2) + Math.pow(line.y1-line.y2, 2));
-				
-				//TODO count leaves
-				
 				//limits on going downwards, etc
 				if(line.y1 < 0 || line.y2 < 0 || line.y1 > maxY || line.y2 > maxY){
 					return -1;
 				}
 			}
 			
-			return surfacearea*12f / volume;
+			float maxleaf = Float.MIN_VALUE;
+			float minleaf = Float.MAX_VALUE;
+			
+			for(Leaf leaf : tree.leaves) {
+				if (leaf.x > maxleaf) {
+					maxleaf = leaf.x;
+				}else if(leaf.x < minleaf) {
+					minleaf = leaf.x;
+				}
+			}
+			
+			surfacearea = maxleaf - minleaf;
+			
+			return surfacearea*12f - volume;
 		}
 	},
 	xSurface{
