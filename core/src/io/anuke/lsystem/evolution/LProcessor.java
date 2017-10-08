@@ -5,23 +5,21 @@ import java.util.Stack;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
 
 import io.anuke.ucore.lsystem.LGen;
 
 public class LProcessor{
 	private static Stack<Vector3> stack = new Stack<>();
-	private static Array<Line> lines = new Array<>();
+	private static LTree tree;
 	private static float lastx, lasty, angle, space;
 	
 	private static final float len = 1f;
-	public static int maxstack = 0;
 	
-	public static Array<Line> getLines(String axiom, HashMap<Character, String> map, int iterations, float space){
+	public static LTree getLines(String axiom, HashMap<Character, String> map, int iterations, float space){
+		tree = new LTree();
 		stack.clear();
 		lastx = lasty = 0;
 		angle = 90f;
-		lines.clear();
 		LProcessor.space = space;
 		
 		String string = LGen.gen(axiom, map, iterations);
@@ -30,7 +28,7 @@ public class LProcessor{
 			drawc(string.charAt(i));
 		}
 		
-		return lines;
+		return tree;
 	}
 	
 	private static void drawForward(){
@@ -47,7 +45,7 @@ public class LProcessor{
 		nx = newX;
 		ny = newY;
 		
-		lines.add(new Line(lastx, lasty, lastx+nx, lasty+ny));
+		tree.lines.add(new Line(lastx, lasty, lastx+nx, lasty+ny));
 		
 		lastx += nx;
 		lasty += ny;
@@ -55,11 +53,14 @@ public class LProcessor{
 	
 	private static void push(){
 		stack.push(new Vector3(lastx, lasty, angle));
-		maxstack = Math.max(maxstack, stack.size());
+		tree.branches ++;
 	}
 	
 	private static void pop(){
+		tree.leaves.add(new Leaf(lastx, lasty, angle));
+		
 		if(stack.isEmpty()) return;
+		
 		Vector3 vec = stack.pop();
 		lastx = vec.x;
 		lasty = vec.y;

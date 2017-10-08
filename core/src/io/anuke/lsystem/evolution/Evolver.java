@@ -2,11 +2,8 @@ package io.anuke.lsystem.evolution;
 
 import java.util.HashMap;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.utils.Array;
-
-import io.anuke.lsystem.evolution.LProcessor.Line;
 import io.anuke.ucore.UCore;
+import io.anuke.ucore.graphics.Hue;
 import io.anuke.ucore.lsystem.LSystemData;
 import io.anuke.ucore.util.Mathf;
 
@@ -38,9 +35,9 @@ public class Evolver{
 				HashMap<Character, String> mutation = mutateCurrent();
 				float mutSpace = currentSpace + Mathf.range(5f);
 
-				Array<Line> lines = LProcessor.getLines(axiom, mutation, iterations, mutSpace);
+				LTree tree = LProcessor.getLines(axiom, mutation, iterations, mutSpace);
 
-				float score = eval.getScore(LProcessor.maxstack, lines);
+				float score = eval.getScore(tree);
 				
 				if(score < 0){
 					continue;
@@ -61,10 +58,7 @@ public class Evolver{
 			currentScore = bestScore;
 		}
 		
-		Array<Line> lines = LProcessor.getLines(axiom, current, iterations, currentSpace);
-		UCore.log("FINAL SCORE: " + eval.getScore(LProcessor.maxstack, lines));
-		
-		return new LSystemData(axiom, current, iterations, 0, 0, 1f, 4f, currentSpace, 1f, Color.GRAY, Color.LIME);
+		return new LSystemData(axiom, current, iterations, 0, 0, 1f, 4f, currentSpace, Mathf.random(1f, 2f), Hue.random(), Hue.random());
 	}
 
 	HashMap<Character, String> mutateCurrent(){

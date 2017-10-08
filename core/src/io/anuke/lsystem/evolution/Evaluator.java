@@ -1,7 +1,5 @@
 package io.anuke.lsystem.evolution;
 
-import com.badlogic.gdx.utils.Array;
-
 import io.anuke.lsystem.evolution.LProcessor.Line;
 import io.anuke.ucore.util.GridMap;
 
@@ -9,15 +7,15 @@ import io.anuke.ucore.util.GridMap;
 public enum Evaluator{
 	leastIntersect {
 		@Override
-		public float getScore(int branches, Array<Line> lines){
+		public float getScore(LTree tree){
 			GridMap<Integer> map = new GridMap<>();
 			float cellsize = 3f;
 			
 			float surface = 0f;
 			float min = 99999, max = 0;
-			int volume = lines.size;
+			int volume = tree.lines.size;
 			
-			for(Line line : lines){
+			for(Line line : tree.lines){
 				surface += Math.abs(line.x1 - line.x2);
 				
 				int cx = (int)(line.x1 / cellsize), cy = (int)(line.y1 / cellsize);
@@ -44,12 +42,12 @@ public enum Evaluator{
 	},
 	leafcount{
 		@Override
-		public float getScore(int branches, Array<Line> lines){
+		public float getScore(LTree tree){
 			
-			float volume = lines.size;
+			float volume = tree.lines.size;
 			float surfacearea = 0f;
 			
-			for(Line line : lines){
+			for(Line line : tree.lines){
 				//volume is represented as the length of the line
 				//volume += Math.sqrt(Math.pow(line.x1-line.x2, 2) + Math.pow(line.y1-line.y2, 2));
 				
@@ -66,11 +64,11 @@ public enum Evaluator{
 	},
 	xSurface{
 		@Override
-		public float getScore(int branches, Array<Line> lines){
+		public float getScore(LTree tree){
 			
 			float surface = 0f;
 			
-			for(Line line : lines){
+			for(Line line : tree.lines){
 				surface += Math.abs(line.x1 - line.x2);
 				
 				if(line.y1 < 0 || line.y2 < 0 || line.y1 > maxY || line.y2 > maxY){
@@ -78,16 +76,16 @@ public enum Evaluator{
 				}
 			}
 			
-			return surface*4f - lines.size;
+			return surface*4f - tree.lines.size;
 		}
 	},
 	ySurface{
 		@Override
-		public float getScore(int branches, Array<Line> lines){
+		public float getScore(LTree tree){
 			
 			float surface = 0f;
 			
-			for(Line line : lines){
+			for(Line line : tree.lines){
 				surface += Math.abs(line.y1 - line.y2);
 				
 				if(line.y1 < 0 || line.y2 < 0 || line.y1 > maxY || line.y2 > maxY){
@@ -95,10 +93,10 @@ public enum Evaluator{
 				}
 			}
 			
-			return surface*4f - lines.size;
+			return surface*4f - tree.lines.size;
 		}
 	};
 	static float maxY = 300f;
 	
-	public abstract float getScore(int branches, Array<Line> lines);
+	public abstract float getScore(LTree tree);
 }
