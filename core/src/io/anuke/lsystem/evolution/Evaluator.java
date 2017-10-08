@@ -43,13 +43,22 @@ public enum Evaluator{
 	leafcount{
 		@Override
 		public float getScore(LTree tree){
+			GridMap<Integer> map = new GridMap<>();
+			float cellsize = 2f;
 			
 			float volume = tree.lines.size;
 			float surfacearea = 0f;
 			
+			float xbounds = 200f;
+			
+			if(tree.lines.size <= 2){
+				return -1;
+			}
+			
 			for(Line line : tree.lines){
 				//limits on going downwards, etc
-				if(line.y1 < 0 || line.y2 < 0 || line.y1 > maxY || line.y2 > maxY){
+				if(line.y1 < 0 || line.y2 < 0 || line.y1 > maxY || line.y2 > maxY ||
+						line.x1 < -xbounds || line.x1 > xbounds){
 					return -1;
 				}
 			}
@@ -63,11 +72,65 @@ public enum Evaluator{
 				}else if(leaf.x < minleaf) {
 					minleaf = leaf.x;
 				}
+				
+				int cx = (int)(leaf.x / cellsize), cy = (int)(leaf.y / cellsize);
+				int before = map.get(cx, cy) == null ? 0 : map.get(cx, cy);
+				
+				map.put(cx, cy, before + 1);
+			}
+			if(tree.leaves.size != 0){
+				surfacearea = maxleaf - minleaf;
 			}
 			
-			surfacearea = maxleaf - minleaf;
+			return surfacearea + tree.leaves.size*400f - volume;
+		}
+	},
+	symmetry{
+		@Override
+		public float getScore(LTree tree){
+			GridMap<Integer> map = new GridMap<>();
+			float cellsize = 2f;
 			
-			return surfacearea*12f - volume;
+			float surface = 0f;
+			int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
+			int height = Integer.MIN_VALUE;
+			int volume = tree.lines.size;
+			
+			for(Line line : tree.lines){
+				surface += 4f*(Math.abs(line.x1 - line.x2)*2f - Math.abs(line.y1 - line.y2));
+				
+				int cx = (int)((line.x1 + line.x2) / 2f / cellsize), cy = (int)((line.y1 + line.y2) / 2f / cellsize);
+				int before = map.get(cx, cy) == null ? 0 : map.get(cx, cy);
+				
+				min = Math.min(cx, min);
+				max = Math.max(cx, max);
+				height = Math.max(cy, height);
+				
+				map.put(cx, cy, before + 1);
+				
+				if(line.y1 < 0 || line.y2 < 0 || line.y1 > maxY || line.y2 > maxY){
+					return -1;
+				}
+			}
+			
+			if(min != -max){
+				return -1;
+			}
+			
+			
+			for(int x = min; x <= max; x ++){
+				for(int y = 0; y <= height; y ++){
+					int value = (map.get(x, y) == null ? 0 : map.get(x, y));
+					int valueM = (map.get(-x, y) == null ? 0 : map.get(-x, y));
+					
+					if(value != valueM){
+						surface -= 10f;
+					}
+				}
+			}
+			
+			
+			return surface*5f + tree.leaves.size*15f - volume + height*4f;
 		}
 	},
 	xSurface{

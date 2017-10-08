@@ -8,16 +8,16 @@ import io.anuke.ucore.lsystem.LSystemData;
 import io.anuke.ucore.util.Mathf;
 
 public class Evolver {
-	int variants = 6;
-	int generations = 50;
-	int maxMutations = 3;
+	int variants = 10;
+	int generations = 40;
+	int maxMutations = 5;
 	char[] insertChars = { '+', '-', 'F', 'X' };
 	Evaluator eval = Evaluator.leafcount;
 
 	int iterations = 3;
 	String axiom = "X";
 	HashMap<Character, String> current = new HashMap<Character, String>();
-	float currentSpace = 15f;
+	float currentSpace = 35f;
 	float currentScore = 0f;
 
 	boolean limitrulesize = false;
@@ -61,7 +61,7 @@ public class Evolver {
 			currentScore = bestScore;
 		}
 
-		return new LSystemData(axiom, current, iterations, 0, 0, 1f, 4f, currentSpace, Mathf.random(1f, 2f),
+		return new LSystemData(axiom, current, iterations, 0, 0, 1f, 4f, currentSpace, 1f,
 				Hue.random(), Hue.random());
 	}
 
@@ -81,7 +81,7 @@ public class Evolver {
 
 		for (int i = 0; i < mutations; i++) {
 
-			int rand = Mathf.random(0, insertChars.length + 2);
+			int rand = Mathf.random(0, insertChars.length + 5);
 
 			// delete a random character
 			if (Mathf.chance(0.2) && current.length() > 5) {
