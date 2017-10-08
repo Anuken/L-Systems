@@ -15,7 +15,7 @@ public class Evolver{
 	int generations = 50;
 	int maxMutations = 3;
 	char[] insertChars = { '+', '-', 'F', 'X' };
-	Evaluator eval = Evaluator.xSurface;
+	Evaluator eval = Evaluator.leafcount;
 
 	int iterations = 3;
 	String axiom = "X";

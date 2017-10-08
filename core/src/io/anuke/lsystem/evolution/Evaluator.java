@@ -42,6 +42,28 @@ public enum Evaluator{
 			return surface*4f - volume - Math.abs(max - min);
 		}
 	},
+	leafcount{
+		@Override
+		public float getScore(int branches, Array<Line> lines){
+			
+			float volume = lines.size;
+			float surfacearea = 0f;
+			
+			for(Line line : lines){
+				//volume is represented as the length of the line
+				//volume += Math.sqrt(Math.pow(line.x1-line.x2, 2) + Math.pow(line.y1-line.y2, 2));
+				
+				//TODO count leaves
+				
+				//limits on going downwards, etc
+				if(line.y1 < 0 || line.y2 < 0 || line.y1 > maxY || line.y2 > maxY){
+					return -1;
+				}
+			}
+			
+			return surfacearea*12f / volume;
+		}
+	},
 	xSurface{
 		@Override
 		public float getScore(int branches, Array<Line> lines){
