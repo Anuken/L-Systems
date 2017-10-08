@@ -11,11 +11,11 @@ import io.anuke.ucore.lsystem.LSystemData;
 import io.anuke.ucore.util.Mathf;
 
 public class Evolver{
-	int variants = 5;
-	int generations = 50;
+	int variants = 6;
+	int generations = 500;
 	int maxMutations = 3;
 	char[] insertChars = { '+', '-', 'F', 'X' };
-	Evaluator eval = Evaluator.surface;
+	Evaluator eval = Evaluator.leastIntersect;
 
 	int iterations = 3;
 	String axiom = "X";
@@ -83,6 +83,12 @@ public class Evolver{
 
 		for(int i = 0; i < mutations; i++){
 			int rand = Mathf.random(0, insertChars.length + 2);
+			
+			if(Mathf.chance(0.2) && current.length() > 5){
+				int idx = Mathf.random(current.length()-1);
+				current.deleteCharAt(idx);
+				continue;
+			}
 
 			if(rand < insertChars.length){
 				current.insert(Mathf.random(0, current.length() - 1), insertChars[rand]);
