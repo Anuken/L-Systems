@@ -73,6 +73,10 @@ public enum Evaluator{
 					minleaf = leaf.x;
 				}
 				
+				if(leaf.y < 20) {
+					return volume += 1f;
+				}
+				
 				int cx = (int)(leaf.x / cellsize), cy = (int)(leaf.y / cellsize);
 				int before = map.get(cx, cy) == null ? 0 : map.get(cx, cy);
 				
@@ -115,6 +119,12 @@ public enum Evaluator{
 			
 			if(min != -max){
 				return -1;
+			}
+			
+			for(Leaf leaf : tree.leaves) {
+				if(leaf.y < 20) {
+					surface -= 1f;
+				}
 			}
 			
 			

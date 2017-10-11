@@ -15,17 +15,17 @@ public class Evolver {
 	Evaluator eval = Evaluator.leafcount;
 
 	int iterations = 3;
-	String axiom = "X";
+	String axiom = "FFX";
 	HashMap<Character, String> current = new HashMap<Character, String>();
 	float currentSpace = 35f;
 	float currentScore = 0f;
 
 	boolean limitrulesize = false;
-	int maxrulesize = 15;
+	int maxrulesize = 50;
 
 	public LSystemData evolve() {
 		current.put('X', "XF");
-		current.put('F', "F");
+		current.put('F', "FF");
 
 		for (int g = 0; g < generations; g++) {
 			UCore.log("Generation " + g + ": best score currently " + currentScore);
@@ -68,9 +68,11 @@ public class Evolver {
 	HashMap<Character, String> mutateCurrent() {
 		HashMap<Character, String> map = (HashMap<Character, String>) current.clone();
 
-		for (Character c : map.keySet()) {
-			map.put(c, mutateString(map.get(c)));
-		}
+		//for (Character c : map.keySet()) {
+		//	map.put(c, mutateString(map.get(c)));
+		//}
+		
+		map.put('X', mutateString(map.get('X')));
 
 		return map;
 	}
