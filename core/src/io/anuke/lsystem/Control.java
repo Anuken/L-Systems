@@ -22,7 +22,7 @@ import com.badlogic.gdx.utils.JsonWriter.OutputType;
 import io.anuke.lsystem.evolution.Evolver;
 import io.anuke.ucore.UCore;
 import io.anuke.ucore.core.*;
-import io.anuke.ucore.graphics.PixmapUtils;
+import io.anuke.ucore.graphics.Pixmaps;
 import io.anuke.ucore.lsystem.LSystemData;
 import io.anuke.ucore.modules.RendererModule;
 import io.anuke.ucore.scene.utils.Cursors;
@@ -425,8 +425,8 @@ public class Control extends RendererModule{
 					}
 				}
 				
-				Pixmap out = PixmapUtils.crop(pix, minx, miny, maxx - minx, maxy - miny);
-				PixmapUtils.flip(out);
+				Pixmap out = Pixmaps.crop(pix, minx, miny, maxx - minx, maxy - miny);
+				Pixmaps.flip(out);
 				
 				FileHandle file = Gdx.files.local("screenshots/screenshot-" + TimeUtils.millis() + ".png");
 				

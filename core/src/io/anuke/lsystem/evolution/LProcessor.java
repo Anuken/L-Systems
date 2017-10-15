@@ -15,7 +15,7 @@ public class LProcessor{
 	
 	private static final float len = 1f;
 	
-	public static LTree getLines(String axiom, HashMap<Character, String> map, int iterations, float space){
+	public static LTree getTree(String axiom, HashMap<Character, String> map, int iterations, float space){
 		tree = new LTree();
 		stack.clear();
 		lastx = lasty = 0;

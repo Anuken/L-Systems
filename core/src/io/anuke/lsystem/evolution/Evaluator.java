@@ -4,7 +4,7 @@ import io.anuke.lsystem.evolution.LProcessor.Line;
 import io.anuke.ucore.util.GridMap;
 
 
-public enum Evaluator{
+public enum Evaluator implements IEvaluator{
 	leastIntersect {
 		@Override
 		public float getScore(LTree tree){
@@ -168,6 +168,4 @@ public enum Evaluator{
 		}
 	};
 	static float maxY = 300f;
-	
-	public abstract float getScore(LTree tree);
 }
