@@ -29,6 +29,7 @@ allprojects {
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+        maven { url 'https://jitpack.io' }
     }
 }
 
@@ -61,7 +62,7 @@ project(":core") {
 
 
     dependencies {
-        compile fileTree(dir: '../core/lib', include: '*.jar')
+        compile 'com.github.Anuken:ucore:61c43bf'
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
     }
 }
