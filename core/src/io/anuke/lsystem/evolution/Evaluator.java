@@ -1,8 +1,10 @@
 package io.anuke.lsystem.evolution;
 
-import io.anuke.lsystem.evolution.LProcessor.Line;
+import io.anuke.ucore.lsystem.IEvaluator;
+import io.anuke.ucore.lsystem.LTree;
+import io.anuke.ucore.lsystem.LTree.Leaf;
+import io.anuke.ucore.lsystem.LTree.Line;
 import io.anuke.ucore.util.GridMap;
-
 
 public enum Evaluator implements IEvaluator{
 	leastIntersect {

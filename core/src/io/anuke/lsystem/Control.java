@@ -19,10 +19,13 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
 
-import io.anuke.lsystem.evolution.Evolver;
+import io.anuke.lsystem.evolution.Evaluator;
 import io.anuke.ucore.UCore;
 import io.anuke.ucore.core.*;
+import io.anuke.ucore.graphics.Hue;
 import io.anuke.ucore.graphics.Pixmaps;
+import io.anuke.ucore.lsystem.EvolutionData;
+import io.anuke.ucore.lsystem.Evolver;
 import io.anuke.ucore.lsystem.LSystemData;
 import io.anuke.ucore.modules.RendererModule;
 import io.anuke.ucore.scene.utils.Cursors;
@@ -42,6 +45,8 @@ public class Control extends RendererModule{
 	private float lastx, lasty;
 	private float targetZoom = 1f;
 	
+	private Evolver evolver = new Evolver();
+	private EvolutionData data = new EvolutionData();
 	private float swayscl = 2f;
 	private float swayphase = 15f;
 	private float swayspace = 1f;
@@ -380,7 +385,10 @@ public class Control extends RendererModule{
 			}
 			
 			if(Inputs.keyUp(Keys.I)){
-				setData(new Evolver().evolve());
+				data.start = Hue.random();
+				data.end = Hue.random();
+				data.eval = Evaluator.leafcount;
+				setData(evolver.evolve(data));
 				
 				Core.scene.clear();
 				Vars.ui.init();
