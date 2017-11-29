@@ -12,22 +12,43 @@ public class Evolver {
 	int generations = 40;
 	int maxMutations = 5;
 	char[] insertChars = { '+', '-', 'F', 'X' };
-	Evaluator eval = Evaluator.leafcount;
+	IEvaluator eval = Evaluator.leafcount;
 
 	int iterations = 3;
-	String axiom = "FFX";
+	String axiom = "FX";
 	HashMap<Character, String> current = new HashMap<Character, String>();
-	float currentSpace = 35f;
-	float currentScore = 0f;
-
+	float currentSpace;
+	float currentScore;
+	
+	HashMap<Character, String> defaultRules = new HashMap<Character, String>(){{
+		put('X', "XF");
+		put('F', "FF");
+	}};
+	
+	float defaultSpace = 35f;
+	
 	boolean limitrulesize = false;
 	int maxrulesize = 50;
+	
+	public Evolver(){
+		
+	}
+	
+	public Evolver(IEvaluator eval){
+		this.eval = eval;
+	}
+	
+	public void reset(){
+		current.clear();
+		current.putAll(defaultRules);
+		currentSpace = defaultSpace;
+		currentScore = 0f;
+	}
 
 	public LSystemData evolve() {
-		current.put('X', "XF");
-		current.put('F', "FF");
+		reset();
 
-		for (int g = 0; g < generations; g++) {
+		for (int g = 0; g < generations; g ++) {
 			UCore.log("Generation " + g + ": best score currently " + currentScore);
 
 			HashMap<Character, String> bestTree = current;
